@@ -5,3 +5,5 @@ dist
 bundle.js
 app.css.map
 Junk.elm
+*.iml
+elm.js

@@ -3,18 +3,26 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import String
+import Debug
 
 
 -- model
 
 
 type alias Model =
-    Int
+    { total : Int
+    , input : String
+    , error : Maybe String
+    }
 
 
 initModel : Model
 initModel =
-    0
+    { total = 0
+    , input = ""
+    , error = Nothing
+    }
 
 
 
@@ -22,15 +30,24 @@ initModel =
 
 
 type Msg
-    = AddCalorie
+    = AddCalories
+    | Input String
     | Clear
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        AddCalorie ->
-            model + 1
+        AddCalories ->
+            case String.toInt model.input of
+                Ok c ->
+                    { model | total = model.total + c, error = Nothing, input = "" }
+
+                Err err ->
+                    { model | error = Just err, input = "" }
+
+        Input newInput ->
+            { model | input = newInput }
 
         Clear ->
             initModel
@@ -43,11 +60,17 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ h3 []
-            [ text ("Total Calories: " ++ (toString model)) ]
+        [ h3 [] [ text ("Total Calories: " ++ (toString model.total)) ]
+        , input
+            [ type_ "text"
+            , onInput Input
+            , value model.input
+            ]
+            []
+        , div [] [ text (Maybe.withDefault "" model.error) ]
         , button
             [ type_ "button"
-            , onClick AddCalorie
+            , onClick AddCalories
             ]
             [ text "Add" ]
         , button
