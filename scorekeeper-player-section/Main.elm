@@ -69,6 +69,9 @@ update msg model =
             else
                 save model
 
+        Edit player ->
+            { model | name = player.name, playerId = Just player.id }
+
         Score player points ->
             let
                 newPlayers =
