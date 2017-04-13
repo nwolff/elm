@@ -69,6 +69,20 @@ update msg model =
             else
                 save model
 
+        Score player points ->
+            let
+                newPlayers =
+                    List.map
+                        (\p ->
+                            if p.id == player.id then
+                                { p | points = p.points + points }
+                            else
+                                p
+                        )
+                        model.players
+            in
+                { model | players = newPlayers }
+
         _ ->
             model
 
@@ -177,7 +191,11 @@ playerListHeader =
 
 playerList : Model -> Html Msg
 playerList model =
-    ul [] (List.map singlePlayer model.players)
+    -- ul [] (List.map singlePlayer model.players)
+    model.players
+        |> List.sortBy .name
+        |> List.map singlePlayer
+        |> ul []
 
 
 singlePlayer : Player -> Html Msg
