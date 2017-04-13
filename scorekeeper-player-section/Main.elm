@@ -169,20 +169,26 @@ playerSection model =
 
 playerListHeader : Html Msg
 playerListHeader =
-    h2 [] [ text "Players" ]
+    header []
+        [ div [] [ text "Name" ]
+        , div [] [ text "Points" ]
+        ]
 
 
 playerList : Model -> Html Msg
 playerList model =
-    let
-        texts =
-            List.map
-                (\player ->
-                    text (player.name ++ ": " ++ toString player.points)
-                )
-                model.players
-    in
-        h2 [] texts
+    ul [] (List.map singlePlayer model.players)
+
+
+singlePlayer : Player -> Html Msg
+singlePlayer player =
+    li []
+        [ div [] [ text player.name ]
+        , i [ class "edit", onClick (Edit player) ] []
+        , button [ type_ "button", onClick (Score player 2) ] [ text "2pt" ]
+        , button [ type_ "button", onClick (Score player 3) ] [ text "3pt" ]
+        , div [] [ text (toString player.points) ]
+        ]
 
 
 pointTotal : Model -> Html Msg
@@ -196,7 +202,10 @@ pointTotal model =
         totalPoints =
             List.sum (playerPoints)
     in
-        h2 [] [ text ("Total: " ++ toString totalPoints) ]
+        footer []
+            [ div [] [ text "Total:" ]
+            , div [] [ text (toString totalPoints) ]
+            ]
 
 
 main : Program Never Model Msg
