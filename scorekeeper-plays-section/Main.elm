@@ -212,37 +212,47 @@ playerListHeader =
 
 playerList : Model -> Html Msg
 playerList model =
-    -- ul []
-    --     (List.map player model.players)
     model.players
         |> List.sortBy .name
-        |> List.map player
+        |> List.map (viewPlayer model)
         |> ul []
 
 
-player : Player -> Html Msg
-player player =
-    li []
-        [ i
-            [ class "edit"
-            , onClick (Edit player)
+viewPlayer : Model -> Player -> Html Msg
+viewPlayer model player =
+    let
+        divAttributes =
+            case model.playerId of
+                Just id ->
+                    if player.id == id then
+                        [ class "edit" ]
+                    else
+                        []
+
+                Nothing ->
+                    []
+    in
+        li []
+            [ i
+                [ class "edit"
+                , onClick (Edit player)
+                ]
+                []
+            , div divAttributes
+                [ text player.name ]
+            , button
+                [ type_ "button"
+                , onClick (Score player 2)
+                ]
+                [ text "2pt" ]
+            , button
+                [ type_ "button"
+                , onClick (Score player 3)
+                ]
+                [ text "3pt" ]
+            , div []
+                [ text (toString player.points) ]
             ]
-            []
-        , div []
-            [ text player.name ]
-        , button
-            [ type_ "button"
-            , onClick (Score player 2)
-            ]
-            [ text "2pt" ]
-        , button
-            [ type_ "button"
-            , onClick (Score player 3)
-            ]
-            [ text "3pt" ]
-        , div []
-            [ text (toString player.points) ]
-        ]
 
 
 pointTotal : Model -> Html Msg
@@ -260,17 +270,27 @@ pointTotal model =
 
 playerForm : Model -> Html Msg
 playerForm model =
-    Html.form [ onSubmit Save ]
-        [ input
+    let
+        inputBaseAttributes =
             [ type_ "text"
             , placeholder "Add/Edit Player..."
             , onInput Input
             , value model.name
             ]
-            []
-        , button [ type_ "submit" ] [ text "Save" ]
-        , button [ type_ "button", onClick Cancel ] [ text "Cancel" ]
-        ]
+
+        inputAttributes =
+            case model.playerId of
+                Just _ ->
+                    (class "edit") :: inputBaseAttributes
+
+                Nothing ->
+                    inputBaseAttributes
+    in
+        Html.form [ onSubmit Save ]
+            [ input inputAttributes []
+            , button [ type_ "submit" ] [ text "Save" ]
+            , button [ type_ "button", onClick Cancel ] [ text "Cancel" ]
+            ]
 
 
 playSection : Model -> Html Msg
