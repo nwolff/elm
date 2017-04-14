@@ -221,16 +221,16 @@ playerList model =
 viewPlayer : Model -> Player -> Html Msg
 viewPlayer model player =
     let
-        divAttributes =
+        editPlayerClass =
             case model.playerId of
                 Just id ->
                     if player.id == id then
-                        [ class "edit" ]
+                        "edit"
                     else
-                        []
+                        ""
 
                 Nothing ->
-                    []
+                    ""
     in
         li []
             [ i
@@ -238,7 +238,7 @@ viewPlayer model player =
                 , onClick (Edit player)
                 ]
                 []
-            , div divAttributes
+            , div [ class editPlayerClass ]
                 [ text player.name ]
             , button
                 [ type_ "button"
@@ -271,23 +271,23 @@ pointTotal model =
 playerForm : Model -> Html Msg
 playerForm model =
     let
-        inputBaseAttributes =
-            [ type_ "text"
-            , placeholder "Add/Edit Player..."
-            , onInput Input
-            , value model.name
-            ]
-
-        inputAttributes =
+        editInputClass =
             case model.playerId of
                 Just _ ->
-                    (class "edit") :: inputBaseAttributes
+                    "edit"
 
                 Nothing ->
-                    inputBaseAttributes
+                    ""
     in
         Html.form [ onSubmit Save ]
-            [ input inputAttributes []
+            [ input
+                [ type_ "text"
+                , placeholder "Add/Edit Player..."
+                , onInput Input
+                , value model.name
+                , class editInputClass
+                ]
+                []
             , button [ type_ "submit" ] [ text "Save" ]
             , button [ type_ "button", onClick Cancel ] [ text "Cancel" ]
             ]
